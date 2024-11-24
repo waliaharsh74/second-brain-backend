@@ -21,8 +21,10 @@ const userSchema = new mongoose.Schema({
 const ContentSchema = new mongoose.Schema({
     title: String,
     link: String,
-    tags: [{ type: mongoose.Types.ObjectId, ref: 'Tag' }],
-    userId: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
+    type: String,
+    tags: [String],
+
+    // userId: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
 })
 
 const ContentModel = mongoose.model("Content", ContentSchema);

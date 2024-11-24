@@ -1,5 +1,6 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
+import cors from 'cors'
 import jwt from 'jsonwebtoken'
 import { mongoConnect } from './db/mongoConnect';
 import { User, ContentModel } from './schema/User.model'
@@ -7,6 +8,7 @@ import { userMiddleware } from './middleware/userMiddleware';
 const app = express();
 const port = 3000
 app.use(express.json())
+app.use(cors())
 app.post('/api/v1/signup', async (req, res) => {
     try {
         const { userName, password } = req?.body;
@@ -55,19 +57,20 @@ app.post('api/v1/signin', async (req, res) => {
 })
 
 
-app.post("/api/v1/content", userMiddleware, async (req, res) => {
+app.post("/api/v1/content", async (req, res) => {
     try {
 
 
         const link = req.body.link;
         const type = req.body.type;
+        const tags = req.body.tags
         await ContentModel.create({
             link,
             type,
             title: req.body.title,
             // @ts-ignore
-            userId: req.userId,
-            tags: []
+            // userId: req.userId,
+            tags
         })
 
         res.json({
@@ -80,15 +83,16 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
 
 })
 
-app.get("/api/v1/content", userMiddleware, async (req, res) => {
+app.get("/api/v1/content", async (req, res) => {
     try {
 
 
         // @ts-ignore
-        const userId = req.userId;
-        const content = await ContentModel.find({
-            userId: userId
-        }).populate("userId", "username")
+        // const userId = req.userId;
+        // const content = await ContentModel.find({
+        //     userId: userId
+        // }).populate("userId", "username")
+        const content = await ContentModel.find();
         res.json({
             content
         })
