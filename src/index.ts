@@ -10,15 +10,16 @@ const port = 3000
 app.use(express.json())
 app.use(cors())
 app.post('/api/v1/signup', async (req, res) => {
+    console.log("object");
     try {
-        const { userName, password } = req?.body;
-        const existingUser = await User.findOne({ userName });
+        const { email, password } = req?.body;
+        const existingUser = await User.findOne({ email });
         if (existingUser) res.status(403).json({
             message: "User already exists"
         })
         const passwordSalt = process.env.PASSWORD_SALT || ""
         const hashedPassword = await bcrypt.hash(password, passwordSalt)
-        await User.create({ userName, password: hashedPassword })
+        await User.create({ email, password: hashedPassword })
         res.json({
             msg: "Signup Success",
             status: 200
@@ -26,16 +27,18 @@ app.post('/api/v1/signup', async (req, res) => {
     }
     catch (error) {
         console.log(error);
-
+        // res.status(400).json({
+        //     error
+        // })
     }
 
 })
-app.post('api/v1/signin', async (req, res) => {
+app.post('/api/v1/signin', async (req, res) => {
     try {
-        const { userName, password } = req?.body;
+        const { email, password } = req?.body;
         const passwordSalt = process.env.PASSWORD_SALT || ""
         const hashedPassword = await bcrypt.hash(password, passwordSalt)
-        const existingUser = await User.findOne({ userName, password: hashedPassword });
+        const existingUser = await User.findOne({ email, password: hashedPassword });
 
         if (existingUser) {
             const token = jwt.sign({
@@ -91,13 +94,15 @@ app.get("/api/v1/content", async (req, res) => {
         // const userId = req.userId;
         // const content = await ContentModel.find({
         //     userId: userId
-        // }).populate("userId", "username")
+        // }).populate("userId", "email")
         const content = await ContentModel.find();
         res.json({
             content
         })
     } catch (error) {
-
+        res.status(400).json({
+            error
+        })
     }
 })
 
