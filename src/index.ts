@@ -60,10 +60,10 @@ app.post('/api/v1/signin', async (req, res) => {
 })
 
 
-app.post("/api/v1/content", async (req, res) => {
+app.post("/api/v1/content", userMiddleware, async (req, res) => {
     try {
-
-
+        // @ts-ignore
+        console.log("object", req?.userId);
         const link = req.body.link;
         const type = req.body.type;
         const tags = req.body.tags
@@ -72,7 +72,7 @@ app.post("/api/v1/content", async (req, res) => {
             type,
             title: req.body.title,
             // @ts-ignore
-            // userId: req.userId,
+            userId: req.userId,
             tags
         })
 
@@ -86,20 +86,20 @@ app.post("/api/v1/content", async (req, res) => {
 
 })
 
-app.get("/api/v1/content", async (req, res) => {
+app.get("/api/v1/content", userMiddleware, async (req, res) => {
     try {
 
 
         // @ts-ignore
-        // const userId = req.userId;
-        // const content = await ContentModel.find({
-        //     userId: userId
-        // }).populate("userId", "email")
-        const content = await ContentModel.find();
+        const userId = req.userId;
+        const content = await ContentModel.find({
+            userId: userId
+        }).populate("userId", "email")
         res.json({
             content
         })
     } catch (error) {
+        console.log("err", error);
         res.status(400).json({
             error
         })

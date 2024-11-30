@@ -4,11 +4,13 @@ import { NextFunction, Request, Response } from "express";
 
 export const userMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const { authorization = '' } = req?.headers
+
     const token = authorization.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_PASSWORD || " ")
+    const decoded = jwt.verify(token, process.env.JWT_PASSWORD || "")
+
     if (decoded) {
         //@ts-ignore
-        req.user = decoded.id
+        req.userId = decoded.id
     }
     else {
 

@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         require: true,
-
     }
 
 }, { timestamps: true })
@@ -20,8 +19,7 @@ const ContentSchema = new mongoose.Schema({
     link: String,
     type: String,
     tags: [String],
-
-    // userId: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: mongoose.Types.ObjectId, ref: 'users', required: true },
 })
 
 const ContentModel = mongoose.model("Content", ContentSchema);
