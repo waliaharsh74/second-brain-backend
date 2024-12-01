@@ -19,6 +19,7 @@ const ContentSchema = new mongoose.Schema({
     link: String,
     type: String,
     tags: [String],
+    content: String,
     userId: { type: mongoose.Types.ObjectId, ref: 'users', required: true },
 })
 

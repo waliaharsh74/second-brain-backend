@@ -9,6 +9,10 @@ const app = express();
 const port = 3000
 app.use(express.json())
 app.use(cors())
+interface SearchQuery {
+    userId: String,
+    type?: String
+}
 app.post('/api/v1/signup', async (req, res) => {
     console.log("object");
     try {
@@ -67,13 +71,15 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
         const link = req.body.link;
         const type = req.body.type;
         const tags = req.body.tags
+        const content = req.body.content
         await ContentModel.create({
             link,
             type,
             title: req.body.title,
             // @ts-ignore
             userId: req.userId,
-            tags
+            tags,
+            content
         })
 
         res.json({
@@ -92,9 +98,16 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
 
         // @ts-ignore
         const userId = req.userId;
-        const content = await ContentModel.find({
-            userId: userId
-        }).populate("userId", "email")
+        const { type } = req?.query
+        let searchQuery: SearchQuery = {
+            userId: userId,
+
+        }
+        if (typeof type === 'string') {
+            searchQuery.type = type
+        }
+        const content = await ContentModel.find(searchQuery).populate("userId", "email")
+        // console.log("object", content);
         res.json({
             content
         })
@@ -111,9 +124,10 @@ app.delete("/api/v1/content", userMiddleware, async (req, res) => {
 
 
         const contentId = req.body.contentId;
+        console.log("contentId", contentId);
 
         await ContentModel.deleteMany({
-            contentId,
+            _id: contentId,
             // @ts-ignore
             userId: req.userId
         })
